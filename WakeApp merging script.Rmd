@@ -1,0 +1,38 @@
+---
+title: "WakeApp Merging"
+author: "Benjamin Holding"
+date: "31/10/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+ipak <- function(pkg){
+    new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+    if (length(new.pkg)) 
+        install.packages(new.pkg, dependencies = TRUE)
+    sapply(pkg, require, character.only = TRUE)
+} #function to see if package is installed. Will download if not, and then opens it.
+
+packages <- c("data.table", "dplyr", "tidyr") #These are the extra packages needed to merge the CSV files
+suppressPackageStartupMessages(ipak(packages))
+```
+
+
+```{r, Wake App Questionnaires Merging Script}
+myoriginalwd <- getwd()
+setwd("/Users/benjaminholding/Desktop/Snooze Word memory ") #enter the location of the data here between quotation marks
+file_list <- list.files()
+L <- length(file_list) 
+
+Q_list <- lapply(file_list, read.csv, header=T, sep=",", dec=".")
+setwd(myoriginalwd)
+Questionnaires_Complete <- rbindlist(Q_list) #this is the complete data frame
+Questionnaires_Complete <- setorder(Questionnaires_Complete,id,date)
+
+write.csv(Questionnaires_Complete, file = "Snooze_STM_test.csv") #This will save the data into a new CSV into your "working directory". If you do not know what your working director is, then enter getwd() below. Change the name of the file to suit you.
+```
